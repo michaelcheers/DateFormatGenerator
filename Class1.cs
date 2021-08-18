@@ -54,7 +54,7 @@ namespace DateFormatGenerator
                 [minute_long] = "mm",
                 [second_short] = "s",
                 [second_long] = "ss"
-            }
+            },
         };
 
         public static List<string> errors = new List<string>();
@@ -105,20 +105,26 @@ namespace DateFormatGenerator
             main.SetAttribute("spellcheck", "true");
             body.AppendChild(main);
             body.AppendChild(new HTMLHRElement());
-            body.AppendChild(CreateSelector(formatting.Keys));
+            HTMLSelectElement langSelector = CreateSelector(formatting.Keys);
+            body.AppendChild(langSelector);
             HTMLDivElement solution = new HTMLDivElement();
             body.AppendChild(solution);
-            main.OnInput = _ =>
+            void Update()
             {
                 string inputted = main.Value;
                 if (inputted.Contains("May")) errors.Add("May is ambiguous between MMM and MMMM. Choose another month.");
                 inputted = Regex.Replace(inputted, @"'(?<!\d)\d{2}(?!\d)", "'[[yy]]");
-                inputted = (Regex.Replace(Regex.Replace(Regex.Replace(Regex.Replace(Regex.Replace(inputted,
-                    @"(?<!\d)0\d:\d{2}( ?)(AM|PM)", "[[hh]]:[[mm]]$1[[tt]]"),
-                    @"(?<!\d)(?>\d|1[0-2]):\d{2}( ?)(AM|PM)", "[[h]]:[[mm]]$1[[tt]]"),
-                    @"(?<!\d)0\d:\d{2}", "[[[HH]]:[[mm]]"),
-                    @"(?<!\d)(?>1?\d|2[0-3]):\d{2}", "[[H]]:[[mm]]"),
-                    @"(?<!\d)(?>\d|1[0-2])( ?)(AM|PM)", "[[h]]$1[[tt]]")
+                inputted = Regex.Replace(inputted, @"(?<!\d)\d{3,}(?!\d)", "[[yyyy]]");
+                inputted = (Regex.Replace(Regex.Replace(Regex.Replace(Regex.Replace(Regex.Replace(Regex.Replace(Regex.Replace(Regex.Replace(Regex.Replace(inputted,
+                    @"(?<!\d)0\d:\d{2}:\d{2}( ?)(AM|PM)",           "[[hh]]:[[mm]]:[[ss]]$1[[tt]]"),
+                    @"(?<!\d)(?>\d|1[0-2]):\d{2}:\d{2}( ?)(AM|PM)", "[[h]]:[[mm]]:[[ss]]$1[[tt]]"),
+                    @"(?<!\d)0\d:\d{2}:\d{2}",                      "[[HH]]:[[mm]]:[[ss]]"),
+                    @"(?<!\d)(?>1?\d|2[0-3]):\d{2}:\d{2}",          "[[H]]:[[mm]]:[[ss]]"),
+                    @"(?<!\d)0\d:\d{2}( ?)(AM|PM)",                 "[[hh]]:[[mm]]$1[[tt]]"),
+                    @"(?<!\d)(?>\d|1[0-2]):\d{2}( ?)(AM|PM)",       "[[h]]:[[mm]]$1[[tt]]"),
+                    @"(?<!\d)0\d:\d{2}",                            "[[HH]]:[[mm]]"),
+                    @"(?<!\d)(?>1?\d|2[0-3]):\d{2}",                "[[H]]:[[mm]]"),
+                    @"(?<!\d)(?>\d|1[0-2])( ?)(AM|PM)",             "[[h]]$1[[tt]]")
                 );
                 IEnumerable<(Match match, int val)> foundDigits = Regex.Matches(inputted, @"(?<!\d)\d{1,2}(?!\d)").Cast<Match>().Select(m => (m, int.Parse(m.Value)));
                 Match dayMonthMatch = null, numMonthMatch = null;
@@ -135,7 +141,6 @@ namespace DateFormatGenerator
                 inputted = SafeSubstitution(inputted, subs);
                 inputted = Regex.Replace(inputted, longMonthRegex, "[[MMMM]]");
                 inputted = Regex.Replace(inputted, shortMonthRegex, "[[MMM]]");
-                inputted = Regex.Replace(inputted, @"(?<!\d)\d{3,}(?!\d)", "[[yyyy]]");
                 inputted = Regex.Replace(inputted, "Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday", "[[dddd]]");
                 inputted = Regex.Replace(inputted, "Mon|Tue|Wed|Thu|Fri|Sat|Sun", "[[ddd]]");
                 Regex formatSpecifier = new Regex(@"(\[\[[a-zA-Z]+\]\])");
@@ -157,13 +162,17 @@ namespace DateFormatGenerator
                 }
                 inputted = outP;
                 solution.InnerHTML = "";
-                solution.AppendChild(new HTMLHeadingElement { InnerHTML = "Format" });
+                solution.AppendChild(new HTMLHeadingElement { InnerHTML = "Format", Style = { TextDecoration = TextDecoration.Underline } });
                 IEnumerable<string> matchingFormats = typeof(DateTimeFormatInfo).GetProperties().Where(p => p.CanRead && p.IsPublic && !p.IsStatic && p.PropertyType == typeof(string) && (string)p.GetValue(DateTimeFormatInfo.CurrentInfo) == inputted).Select(p => p.Name);
+                if (DateTime.TryParseExact(main.Value, inputted, DateTimeFormatInfo.CurrentInfo, out var d))
+                {
+                    solution.AppendChild(new HTMLSpanElement { InnerHTML = "Understood Date: ", Style = { FontWeight = "bold" } });
+                    solution.AppendChild(new Text(d.ToString()));
+                }
                 solution.AppendChild(new HTMLPreElement {
                     InnerHTML = string.Join("\n",
                         new[] {
                         inputted,
-                        DateTime.TryParseExact(main.Value, inputted, DateTimeFormatInfo.CurrentInfo, out var d) ? d.ToString() : null,
                         $"date.ToString({ToQuotedString(inputted)})",
                         inputted.Contains('\\') ? $"date.ToString({ToVerbatimString(inputted)})" : "" }
                         
@@ -179,6 +188,8 @@ namespace DateFormatGenerator
                 }
                 errors.Clear();
             };
+            main.OnInput = _ => Update();
+            langSelector.OnInput = _ => Update();
         }
         public static string ToQuotedString(string input)
         {
