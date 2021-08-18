@@ -137,6 +137,8 @@ namespace DateFormatGenerator
             body.AppendChild(main);
             body.AppendChild(new HTMLHRElement());
             HTMLSelectElement langSelector = CreateSelector(langs.Keys);
+            langSelector.Style.FontSize = "4em";
+            langSelector.Style.CssFloat = Float.Right;
             body.AppendChild(langSelector);
             HTMLDivElement solution = new HTMLDivElement();
             body.AppendChild(solution);
@@ -194,15 +196,11 @@ namespace DateFormatGenerator
                     }
                 }
                 solution.AppendChild(new HTMLPreElement {
-                    InnerHTML = string.Join("\n",
-                        new[] {
-                        inputted,
-                        $"date.ToString({ToQuotedString(inputted)})",
-                        inputted.Contains('\\') ? $"date.ToString({ToVerbatimString(inputted)})" : "" }
-                        
-                        .Concat(
-                            matchingFormats.Select(f => $"date.ToString(DateTimeFormatInfo.CurrentInfo.{f})"))
-                    )
+                    InnerHTML = string.Join("\n", new[] { inputted }.Concat(currentLang != "C#" ? Enumerable.Empty<string>() : new[] {
+                            $"date.ToString({ToQuotedString(inputted)})",
+                            inputted.Contains('\\') ? $"date.ToString({ToVerbatimString(inputted)})" : ""
+                        }.Concat(matchingFormats.Select(f => $"date.ToString(DateTimeFormatInfo.CurrentInfo.{f})"))
+                    ))
                 });
                 if (errors.Count > 0) solution.AppendChild(new HTMLHeadingElement { InnerHTML = "Errors" });
                 foreach (var error in errors)
