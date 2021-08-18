@@ -11,50 +11,81 @@ namespace DateFormatGenerator
     using static DateFormat;
     public enum DateFormat
     {
-        year_short,
-        year_long,
-        monthnum_short,
-        monthnum_long,
-        monthname_short,
-        monthname_long,
-        day_short,
-        day_long,
-        weekday_short,
-        weekday_long,
-        hour_24_short,
-        hour_24_long,
-        hour_12_short,
-        hour_12_long,
-        minute_short,
-        minute_long,
-        second_short,
-        second_long
+        yy,   // year_short
+        yyyy, // year_long
+        M,    // monthnum_short
+        MM,   // monthnum_long
+        MMM,  // monthname_short
+        MMMM, // monthname_long
+        d,    // day_short
+        dd,   // day_long
+        ddd,  // weekday_short
+        dddd, // weekday_long
+        H,    // hour_24_short
+        HH,   // hour_24_long
+        h,    // hour_12_short
+        hh,   // hour_12_long
+        m,    // minute_short
+        mm,   // minute_long
+        s,    // second_short
+        ss,   // second_long
+        tt    // AM/PM
+    }
+
+    public static class Enum
+    {
+        public static T Parse<T>(string name) where T : struct, System.Enum =>
+            System.Enum.GetValues(typeof(T)).Cast<T>().Zip(System.Enum.GetNames(typeof(T)), (a, b) => (value: a, name: b))
+                .Single(t => t.name == name).value;
     }
     public static class Program
     {
-        public static readonly Dictionary<string, Dictionary<DateFormat, string>> formatting = new Dictionary<string, Dictionary<DateFormat, string>>()
+        public static readonly Dictionary<string, Dictionary<DateFormat, string>> langs = new Dictionary<string, Dictionary<DateFormat, string>>()
         {
-            ["C#"] = new Dictionary<DateFormat, string>()
+            ["C#"] = new Dictionary<DateFormat, string>
             {
-                [year_short] = "yy",
-                [year_long] = "yyyy",
-                [monthnum_short] = "M",
-                [monthnum_long] = "MM",
-                [monthname_short] = "MMM",
-                [monthname_long] = "MMMM",
-                [day_short] = "d",
-                [day_long] = "dd",
-                [weekday_short] = "ddd",
-                [weekday_long] = "dddd",
-                [hour_24_short] = "H",
-                [hour_24_long] = "HH",
-                [hour_12_short] = "h",
-                [hour_12_long] = "hh",
-                [minute_short] = "m",
-                [minute_long] = "mm",
-                [second_short] = "s",
-                [second_long] = "ss"
+                [yy] = "yy",
+                [yyyy] = "yyyy",
+                [M] = "M",
+                [MM] = "MM",
+                [MMM] = "MMM",
+                [MMMM] = "MMMM",
+                [d] = "d",
+                [dd] = "dd",
+                [ddd] = "ddd",
+                [dddd] = "dddd",
+                [H] = "H",
+                [HH] = "HH",
+                [h] = "h",
+                [hh] = "hh",
+                [m] = "m",
+                [mm] = "mm",
+                [s] = "s",
+                [ss] = "ss",
+                [tt] = "tt"
             },
+            ["PHP"] = new Dictionary<DateFormat, string>
+            {
+                [yy] = "y",
+                [yyyy] = "Y",
+                [M] = "n",
+                [MM] = "m",
+                [MMM] = "M",
+                [MMMM] = "F",
+                [d] = "j",
+                [dd] = "d",
+                [ddd] = "D",
+                [dddd] = "l",
+                [H] = "G",
+                [HH] = "H",
+                [h] = "g",
+                [hh] = "h",
+                [m] = "i", // only option is with leading zeroes
+                [mm] = "i",
+                [s] = "s",
+                [ss] = "s",
+                [tt] = "A"
+            }
         };
 
         public static List<string> errors = new List<string>();
@@ -105,12 +136,13 @@ namespace DateFormatGenerator
             main.SetAttribute("spellcheck", "true");
             body.AppendChild(main);
             body.AppendChild(new HTMLHRElement());
-            HTMLSelectElement langSelector = CreateSelector(formatting.Keys);
+            HTMLSelectElement langSelector = CreateSelector(langs.Keys);
             body.AppendChild(langSelector);
             HTMLDivElement solution = new HTMLDivElement();
             body.AppendChild(solution);
             void Update()
             {
+                var currentLang = langSelector.Value;
                 string inputted = main.Value;
                 if (inputted.Contains("May")) errors.Add("May is ambiguous between MMM and MMMM. Choose another month.");
                 inputted = Regex.Replace(inputted, @"'(?<!\d)\d{2}(?!\d)", "'[[yy]]");
@@ -143,31 +175,23 @@ namespace DateFormatGenerator
                 inputted = Regex.Replace(inputted, shortMonthRegex, "[[MMM]]");
                 inputted = Regex.Replace(inputted, "Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday", "[[dddd]]");
                 inputted = Regex.Replace(inputted, "Mon|Tue|Wed|Thu|Fri|Sat|Sun", "[[ddd]]");
-                Regex formatSpecifier = new Regex(@"(\[\[[a-zA-Z]+\]\])");
-                string[] split = formatSpecifier.Split(inputted);
-                List<(string str, bool isRaw)> segments = split.Select(v =>
-                    formatSpecifier.IsMatch(v) ? (Regex.Replace(v, @"\[\[([a-zA-Z]+)\]\]", "$1"), isRaw: false) : (v, isRaw: true)
-                ).ToList();
-                string outP = "";
-                foreach (var (str, isRaw) in segments)
-                {
-                    if (!isRaw) { outP += str; continue; }
-                    foreach (string splitPart in Regex.Split(str, "([^a-zA-Z]+)"))
-                    {
-                        string sPart = Regex.Replace(splitPart, "[%\\\"']", @"\$0");
-                        if (Regex.IsMatch(sPart, @"[dfFghHKmMstyz]"))
-                            sPart = "'" + sPart + "'";
-                        outP += sPart;
-                    }
-                }
-                inputted = outP;
+                string formatStringProto = inputted;
+                inputted = GenerateFormatString(formatStringProto, currentLang);
                 solution.InnerHTML = "";
                 solution.AppendChild(new HTMLHeadingElement { InnerHTML = "Format", Style = { TextDecoration = TextDecoration.Underline } });
                 IEnumerable<string> matchingFormats = typeof(DateTimeFormatInfo).GetProperties().Where(p => p.CanRead && p.IsPublic && !p.IsStatic && p.PropertyType == typeof(string) && (string)p.GetValue(DateTimeFormatInfo.CurrentInfo) == inputted).Select(p => p.Name);
-                if (DateTime.TryParseExact(main.Value, inputted, DateTimeFormatInfo.CurrentInfo, out var d))
+                string csFormatStr = GenerateFormatString(formatStringProto, "C#");
+                if (DateTime.TryParseExact(main.Value, csFormatStr, DateTimeFormatInfo.CurrentInfo, out var d))
                 {
                     solution.AppendChild(new HTMLSpanElement { InnerHTML = "Understood Date: ", Style = { FontWeight = "bold" } });
                     solution.AppendChild(new Text(d.ToString()));
+                    string backToString = d.ToString(csFormatStr);
+                    if (backToString != main.Value)
+                    {
+                        solution.AppendChild(new HTMLBRElement());
+                        solution.AppendChild(new HTMLSpanElement { InnerHTML = "Reformatted Date: ", Style = { FontWeight = "bold" } });
+                        solution.AppendChild(new Text(backToString));
+                    }
                 }
                 solution.AppendChild(new HTMLPreElement {
                     InnerHTML = string.Join("\n",
@@ -191,6 +215,30 @@ namespace DateFormatGenerator
             main.OnInput = _ => Update();
             langSelector.OnInput = _ => Update();
         }
+
+        public static string GenerateFormatString(string input, string lang)
+        {
+            var currentLangOpts = langs[lang];
+            Regex formatSpecifier = new Regex(@"(\[\[[a-zA-Z]+\]\])");
+            string[] split = formatSpecifier.Split(input);
+            List<(string str, bool isRaw)> segments = split.Select(v =>
+                formatSpecifier.IsMatch(v) ? (currentLangOpts[Enum.Parse<DateFormat>(Regex.Replace(v, @"\[\[([a-zA-Z]+)\]\]", "$1"))], isRaw: false) : (v, isRaw: true)
+            ).ToList();
+            string outP = "";
+            foreach (var (str, isRaw) in segments)
+            {
+                if (!isRaw) { outP += str; continue; }
+                foreach (string splitPart in Regex.Split(str, "([^a-zA-Z]+)"))
+                {
+                    string sPart = Regex.Replace(splitPart, "[%\\\"']", @"\$0");
+                    if (Regex.IsMatch(sPart, @"[dfFghHKmMstyz]"))
+                        sPart = "'" + sPart + "'";
+                    outP += sPart;
+                }
+            }
+            return outP;
+        }
+
         public static string ToQuotedString(string input)
         {
             StringBuilder literal = new StringBuilder(input.Length + 2);
