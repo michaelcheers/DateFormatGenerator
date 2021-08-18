@@ -95,22 +95,19 @@ namespace DateFormatGenerator
         }
         public static void Main()
         {
-            Document.Body.AppendChild(new HTMLHeadingElement
+            var body = Document.Body.AppendChild(new HTMLDivElement { Style = { MarginLeft = "25%", Width = "50%", FontSize = "1.5em" } });
+            body.AppendChild(new HTMLHeadingElement
             {
                 InnerHTML = "DateTime Format Generator",
-                Style = { TextAlign = TextAlign.Center, TextDecoration = TextDecoration.Underline }
+                Style = { FontSize = "2em", TextAlign = TextAlign.Center, TextDecoration = TextDecoration.Underline }
             });
-            HTMLInputElement main = new HTMLInputElement
-            {
-                Type = InputType.Search,
-                Style = { MarginLeft = "25%", Width = "50%", Height = "3em" }
-            };
+            HTMLInputElement main = new HTMLInputElement { Type = InputType.Search, Style = { TextAlign = TextAlign.Center, Width = "100%", FontSize = "2em" } };
             main.SetAttribute("spellcheck", "true");
-            Document.Body.AppendChild(main);
-            Document.Body.AppendChild(new HTMLHRElement());
-            Document.Body.AppendChild(CreateSelector(formatting.Keys));
+            body.AppendChild(main);
+            body.AppendChild(new HTMLHRElement());
+            body.AppendChild(CreateSelector(formatting.Keys));
             HTMLDivElement solution = new HTMLDivElement();
-            Document.Body.AppendChild(solution);
+            body.AppendChild(solution);
             main.OnInput = _ =>
             {
                 string inputted = main.Value;
