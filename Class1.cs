@@ -63,6 +63,30 @@ namespace DateFormatGenerator
                 [s] = "s",
                 [ss] = "ss",
                 [tt] = "tt"
+                // Escape with '' or \
+            },
+            ["Java"] = new Dictionary<DateFormat, string>
+            {
+                [yy] = "yy",
+                [yyyy] = "yyyy",
+                [M] = "M",
+                [MM] = "MM",
+                [MMM] = "MMM",
+                [MMMM] = "MMMM",
+                [d] = "d",
+                [dd] = "dd",
+                [ddd] = "EEE",
+                [dddd] = "EEEE",
+                [H] = "H",
+                [HH] = "HH",
+                [h] = "h",
+                [hh] = "hh",
+                [m] = "m",
+                [mm] = "mm",
+                [s] = "s",
+                [ss] = "ss",
+                [tt] = "tt"
+                // Escape with ''
             },
             ["PHP"] = new Dictionary<DateFormat, string>
             {
@@ -82,9 +106,33 @@ namespace DateFormatGenerator
                 [hh] = "h",
                 [m] = "i", // only option is with leading zeroes
                 [mm] = "i",
-                [s] = "s",
+                [s] = "s", // only option is with leading zeroes
                 [ss] = "s",
                 [tt] = "A"
+                // Escape with \
+            },
+            ["Python"] = new Dictionary<DateFormat, string>
+            {
+                [yy] = "%y",
+                [yyyy] = "%Y",
+                [M] = "%-m",
+                [MM] = "%m",
+                [MMM] = "%b",
+                [MMMM] = "%B",
+                [d] = "%-d",
+                [dd] = "%d",
+                [ddd] = "%a",
+                [dddd] = "%A",
+                [H] = "%-H",
+                [HH] = "%H",
+                [h] = "%-I",
+                [hh] = "%I",
+                [m] = "%-M",
+                [mm] = "%M",
+                [s] = "%-S",
+                [ss] = "%S",
+                [tt] = "%p"
+                // Escape % with %%
             }
         };
 
