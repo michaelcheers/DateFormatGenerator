@@ -47,7 +47,7 @@ function updateQueryStringParameter(uri, key, value) {
 	}
   } else {
   	if (uri.match(re)) {
-  		return uri.replace(re, '$1' + key + ""="" + value + '$2');
+  		return uri.replace(re, '$1' + key + ""="" + encodeURIComponent(value) + '$2');
 	} else {
     var hash =  '';
     if( uri.indexOf('#') !== -1 ){
@@ -55,13 +55,13 @@ function updateQueryStringParameter(uri, key, value) {
         uri = uri.replace(/#.*/, '');
     }
     var separator = uri.indexOf('?') !== -1 ? ""&"" : ""?"";    
-    return uri + separator + key + ""="" + value + hash;
+    return uri + separator + key + ""="" + encodeURIComponent(value) + hash;
   }
   }  
 }
 if (value !== undefined && value === defaultValue)
 	value = undefined;
-history.replaceState({}, '', updateQueryStringParameter(location.href, key, encodeURIComponent(value)));
+history.replaceState({}, '', updateQueryStringParameter(location.href, key, value));
 ")]
         public static extern void ModifyQS(string key, string value, string defaultValue);
     }
