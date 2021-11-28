@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using Bridge;
 using Bridge.Html5;
 
 namespace DateFormatGenerator
@@ -31,7 +32,39 @@ namespace DateFormatGenerator
         ss,   // second_long
         tt    // AM/PM
     }
-
+    public static class URLManipulation
+    {
+        public static string Q (string name, string defaultValue) =>
+            new URLSearchParams(Window.Location.Search).Get(name) ?? defaultValue;
+        [Script(@"
+function updateQueryStringParameter(uri, key, value) {
+  var re = new RegExp(""([?&])"" + key + ""=.*?(&|#|$)"", ""i"");
+  if( value === undefined ) {
+  	if (uri.match(re)) {
+		return uri.replace(re, '$1$2').replace(/[?&]$/, '').replaceAll(/([?&])&+/g, '$1').replace(/[?&]#/, '#');
+	} else {
+		return uri;
+	}
+  } else {
+  	if (uri.match(re)) {
+  		return uri.replace(re, '$1' + key + ""="" + value + '$2');
+	} else {
+    var hash =  '';
+    if( uri.indexOf('#') !== -1 ){
+        hash = uri.replace(/.*#/, '#');
+        uri = uri.replace(/#.*/, '');
+    }
+    var separator = uri.indexOf('?') !== -1 ? ""&"" : ""?"";    
+    return uri + separator + key + ""="" + value + hash;
+  }
+  }  
+}
+if (value !== undefined && value === defaultValue)
+	value = undefined;
+history.replaceState({}, '', updateQueryStringParameter(location.href, key, encodeURIComponent(value)));
+")]
+        public static extern void ModifyQS(string key, string value, string defaultValue);
+    }
     public static class Enum
     {
         public static T Parse<T>(string name) where T : struct, System.Enum =>
@@ -40,99 +73,163 @@ namespace DateFormatGenerator
     }
     public static class Program
     {
-        public static readonly Dictionary<string, Dictionary<DateFormat, string>> langs = new Dictionary<string, Dictionary<DateFormat, string>>()
+        public static readonly Dictionary<string, DateFormatType> langs = new Dictionary<string, DateFormatType>()
         {
-            ["C#"] = new Dictionary<DateFormat, string>
+            ["C#"] = new CSDateFormat
             {
-                [yy] = "yy",
-                [yyyy] = "yyyy",
-                [M] = "M",
-                [MM] = "MM",
-                [MMM] = "MMM",
-                [MMMM] = "MMMM",
-                [d] = "d",
-                [dd] = "dd",
-                [ddd] = "ddd",
-                [dddd] = "dddd",
-                [H] = "H",
-                [HH] = "HH",
-                [h] = "h",
-                [hh] = "hh",
-                [m] = "m",
-                [mm] = "mm",
-                [s] = "s",
-                [ss] = "ss",
-                [tt] = "tt"
-                // Escape with '' or \
+                Formats = new Dictionary<DateFormat, string>
+                {
+                    [yy] = "yy",
+                    [yyyy] = "yyyy",
+                    [M] = "M",
+                    [MM] = "MM",
+                    [MMM] = "MMM",
+                    [MMMM] = "MMMM",
+                    [d] = "d",
+                    [dd] = "dd",
+                    [ddd] = "ddd",
+                    [dddd] = "dddd",
+                    [H] = "H",
+                    [HH] = "HH",
+                    [h] = "h",
+                    [hh] = "hh",
+                    [m] = "m",
+                    [mm] = "mm",
+                    [s] = "s",
+                    [ss] = "ss",
+                    [tt] = "tt"
+                    // Escape with '' or \
+                }
             },
-            ["Java"] = new Dictionary<DateFormat, string>
+            ["C++"] = new CPPDateFormat
             {
-                [yy] = "yy",
-                [yyyy] = "yyyy",
-                [M] = "M",
-                [MM] = "MM",
-                [MMM] = "MMM",
-                [MMMM] = "MMMM",
-                [d] = "d",
-                [dd] = "dd",
-                [ddd] = "EEE",
-                [dddd] = "EEEE",
-                [H] = "H",
-                [HH] = "HH",
-                [h] = "h",
-                [hh] = "hh",
-                [m] = "m",
-                [mm] = "mm",
-                [s] = "s",
-                [ss] = "ss",
-                [tt] = "tt"
-                // Escape with ''
+                Formats = new Dictionary<DateFormat, string>
+                {
+                    [yy] = "%y",
+                    [yyyy] = "%Y",
+                    [M] = "%m",
+                    [MM] = "%m",
+                    [MMM] = "%b",
+                    [MMMM] = "%B",
+                    [d] = "%d",
+                    [dd] = "%d",
+                    [ddd] = "%a",
+                    [dddd] = "%A",
+                    [H] = "%H",
+                    [HH] = "%H",
+                    [h] = "%I",
+                    [hh] = "%I",
+                    [m] = "%M",
+                    [mm] = "%M",
+                    [s] = "%S",
+                    [ss] = "%S",
+                    [tt] = "%p"
+                    // Escape % with %%
+                }
             },
-            ["PHP"] = new Dictionary<DateFormat, string>
+            ["Luxon JS"] = new LuxonDateFormat
             {
-                [yy] = "y",
-                [yyyy] = "Y",
-                [M] = "n",
-                [MM] = "m",
-                [MMM] = "M",
-                [MMMM] = "F",
-                [d] = "j",
-                [dd] = "d",
-                [ddd] = "D",
-                [dddd] = "l",
-                [H] = "G",
-                [HH] = "H",
-                [h] = "g",
-                [hh] = "h",
-                [m] = "i", // only option is with leading zeroes
-                [mm] = "i",
-                [s] = "s", // only option is with leading zeroes
-                [ss] = "s",
-                [tt] = "A"
-                // Escape with \
+                Formats = new Dictionary<DateFormat, string>
+                {
+                    [yy] = "yy",
+                    [yyyy] = "yyyy",
+                    [M] = "L",
+                    [MM] = "LL",
+                    [MMM] = "LLL",
+                    [MMMM] = "LLLL",
+                    [d] = "d",
+                    [dd] = "dd",
+                    [ddd] = "ccc",
+                    [dddd] = "cccc",
+                    [h] = "h",
+                    [hh] = "hh",
+                    [H] = "H",
+                    [HH] = "HH",
+                    [m] = "m",
+                    [mm] = "mm",
+                    [s] = "s",
+                    [ss] = "ss",
+                    [tt] = "a"
+                    // Escape with '' (or \ ?)
+                }
             },
-            ["Python"] = new Dictionary<DateFormat, string>
+            ["Java"] = new JavaDateFormat
             {
-                [yy] = "%y",
-                [yyyy] = "%Y",
-                [M] = "%-m",
-                [MM] = "%m",
-                [MMM] = "%b",
-                [MMMM] = "%B",
-                [d] = "%-d",
-                [dd] = "%d",
-                [ddd] = "%a",
-                [dddd] = "%A",
-                [H] = "%-H",
-                [HH] = "%H",
-                [h] = "%-I",
-                [hh] = "%I",
-                [m] = "%-M",
-                [mm] = "%M",
-                [s] = "%-S",
-                [ss] = "%S",
-                [tt] = "%p"
-                // Escape % with %%
+                Formats = new Dictionary<DateFormat, string>
+                {
+                    [yy] = "yy",
+                    [yyyy] = "yyyy",
+                    [M] = "M",
+                    [MM] = "MM",
+                    [MMM] = "MMM",
+                    [MMMM] = "MMMM",
+                    [d] = "d",
+                    [dd] = "dd",
+                    [ddd] = "EEE",
+                    [dddd] = "EEEE",
+                    [H] = "H",
+                    [HH] = "HH",
+                    [h] = "h",
+                    [hh] = "hh",
+                    [m] = "m",
+                    [mm] = "mm",
+                    [s] = "s",
+                    [ss] = "ss",
+                    [tt] = "tt"
+                    // Escape with ''
+                }
+            },
+            ["PHP"] = new PHPDateFormat
+            {
+                Formats = new Dictionary<DateFormat, string>
+                {
+                    [yy] = "y",
+                    [yyyy] = "Y",
+                    [M] = "n",
+                    [MM] = "m",
+                    [MMM] = "M",
+                    [MMMM] = "F",
+                    [d] = "j",
+                    [dd] = "d",
+                    [ddd] = "D",
+                    [dddd] = "l",
+                    [H] = "G",
+                    [HH] = "H",
+                    [h] = "g",
+                    [hh] = "h",
+                    [m] = "i", // only option is with leading zeroes
+                    [mm] = "i",
+                    [s] = "s", // only option is with leading zeroes
+                    [ss] = "s",
+                    [tt] = "A"
+                    // Escape with \
+                }
+            },
+            ["Python"] = new PythonDateFormat
+            {
+                Formats = new Dictionary<DateFormat, string>
+                {
+                    [yy] = "%y",
+                    [yyyy] = "%Y",
+                    [M] = "%-m",
+                    [MM] = "%m",
+                    [MMM] = "%b",
+                    [MMMM] = "%B",
+                    [d] = "%-d",
+                    [dd] = "%d",
+                    [ddd] = "%a",
+                    [dddd] = "%A",
+                    [H] = "%-H",
+                    [HH] = "%H",
+                    [h] = "%-I",
+                    [hh] = "%I",
+                    [m] = "%-M",
+                    [mm] = "%M",
+                    [s] = "%-S",
+                    [ss] = "%S",
+                    [tt] = "%p"
+                    // Escape % with %%
+                }
             }
         };
 
@@ -172,6 +269,9 @@ namespace DateFormatGenerator
                 selector.AppendChild(new HTMLOptionElement { Value = opt, InnerHTML = opt });
             return selector;
         }
+
+        public static bool? CodeSampleOpen;
+
         public static void Main()
         {
             var body = Document.Body.AppendChild(new HTMLDivElement { Style = { MarginLeft = "25%", Width = "50%", FontSize = "1.5em" } });
@@ -188,11 +288,17 @@ namespace DateFormatGenerator
             langSelector.Style.FontSize = "4em";
             langSelector.Style.CssFloat = Float.Right;
             body.AppendChild(langSelector);
+            langSelector.Value = URLManipulation.Q("lang", "C#");
+            main.Value = URLManipulation.Q("q", "");
             HTMLDivElement solution = new HTMLDivElement();
             body.AppendChild(solution);
             void Update()
             {
-                var currentLang = langSelector.Value;
+                URLManipulation.ModifyQS("lang", null, null);
+                URLManipulation.ModifyQS("q", null, null);
+                URLManipulation.ModifyQS("lang", langSelector.Value, null);
+                URLManipulation.ModifyQS("q", main.Value, "");
+                var currentLang = langs[langSelector.Value];
                 string inputted = main.Value;
                 if (inputted.Contains("May")) errors.Add("May is ambiguous between MMM and MMMM. Choose another month.");
                 inputted = Regex.Replace(inputted, @"'(?<!\d)\d{2}(?!\d)", "'[[yy]]");
@@ -226,15 +332,17 @@ namespace DateFormatGenerator
                 inputted = Regex.Replace(inputted, "Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday", "[[dddd]]");
                 inputted = Regex.Replace(inputted, "Mon|Tue|Wed|Thu|Fri|Sat|Sun", "[[ddd]]");
                 string formatStringProto = inputted;
-                inputted = GenerateFormatString(formatStringProto, currentLang);
+                inputted = currentLang.GenerateFormatString(formatStringProto);
+                if (solution.QuerySelector("details").As<HTMLDetailsElement>() is HTMLDetailsElement detailsElement)
+                    CodeSampleOpen = detailsElement.Open;
                 solution.InnerHTML = "";
                 solution.AppendChild(new HTMLHeadingElement { InnerHTML = "Format", Style = { TextDecoration = TextDecoration.Underline } });
                 IEnumerable<string> matchingFormats = typeof(DateTimeFormatInfo).GetProperties().Where(p => p.CanRead && p.IsPublic && !p.IsStatic && p.PropertyType == typeof(string) && (string)p.GetValue(DateTimeFormatInfo.CurrentInfo) == inputted).Select(p => p.Name);
-                string csFormatStr = GenerateFormatString(formatStringProto, "C#");
+                string csFormatStr = langs["C#"].GenerateFormatString(formatStringProto);
                 if (DateTime.TryParseExact(main.Value, csFormatStr, DateTimeFormatInfo.CurrentInfo, out var d))
                 {
                     solution.AppendChild(new HTMLSpanElement { InnerHTML = "Understood Date: ", Style = { FontWeight = "bold" } });
-                    solution.AppendChild(new Text(d.ToString()));
+                    solution.AppendChild(new Text(d.ToString("MMMM d, yyyy h:mm tt").ToUpper()));
                     string backToString = d.ToString(csFormatStr);
                     if (backToString != main.Value)
                     {
@@ -243,46 +351,35 @@ namespace DateFormatGenerator
                         solution.AppendChild(new Text(backToString));
                     }
                 }
-                solution.AppendChild(new HTMLPreElement {
-                    InnerHTML = string.Join("\n", new[] { inputted }.Concat(currentLang != "C#" ? Enumerable.Empty<string>() : new[] {
-                            $"date.ToString({ToQuotedString(inputted)})",
-                            inputted.Contains('\\') ? $"date.ToString({ToVerbatimString(inputted)})" : ""
-                        }.Concat(matchingFormats.Select(f => $"date.ToString(DateTimeFormatInfo.CurrentInfo.{f})"))
+                solution.AppendChild(new HTMLPreElement().Add(
+                    string.Join("\n", new[] { inputted }
+                        .Concat(currentLang.CodeSamples(inputted))
+                        .Concat(currentLang is CSDateFormat ? matchingFormats.Select(f => $"date.ToString(DateTimeFormatInfo.CurrentInfo.{f})") : Enumerable.Empty<string>())
                     ))
-                });
-                if (errors.Count > 0) solution.AppendChild(new HTMLHeadingElement { InnerHTML = "Errors" });
-                foreach (var error in errors)
+                );
+                if (errors.Count > 0)
                 {
-                    solution.AppendChild(new Text(error));
+                    solution.AppendChild(new HTMLHeadingElement { InnerHTML = "Errors", Style = { TextDecoration = TextDecoration.Underline } });
+                    foreach (var error in errors)
+                    {
+                        solution.AppendChild(new Text(error));
+                        solution.AppendChild(new HTMLBRElement());
+                    }
+
                     solution.AppendChild(new HTMLBRElement());
                 }
+
                 errors.Clear();
+                if (currentLang.CompleteCodeSample(inputted) is string codeSample)
+                    solution.AppendChild(new HTMLDetailsElement { Open = CodeSampleOpen ?? true }
+                        .Add(new HTMLSummaryElement().Add("Code Sample"))
+                        .Add(new HTMLPreElement().Add(codeSample))
+                    );
             };
             main.OnInput = _ => Update();
             langSelector.OnInput = _ => Update();
-        }
-
-        public static string GenerateFormatString(string input, string lang)
-        {
-            var currentLangOpts = langs[lang];
-            Regex formatSpecifier = new Regex(@"(\[\[[a-zA-Z]+\]\])");
-            string[] split = formatSpecifier.Split(input);
-            List<(string str, bool isRaw)> segments = split.Select(v =>
-                formatSpecifier.IsMatch(v) ? (currentLangOpts[Enum.Parse<DateFormat>(Regex.Replace(v, @"\[\[([a-zA-Z]+)\]\]", "$1"))], isRaw: false) : (v, isRaw: true)
-            ).ToList();
-            string outP = "";
-            foreach (var (str, isRaw) in segments)
-            {
-                if (!isRaw) { outP += str; continue; }
-                foreach (string splitPart in Regex.Split(str, "([^a-zA-Z]+)"))
-                {
-                    string sPart = Regex.Replace(splitPart, "[%\\\"']", @"\$0");
-                    if (Regex.IsMatch(sPart, @"[dfFghHKmMstyz]"))
-                        sPart = "'" + sPart + "'";
-                    outP += sPart;
-                }
-            }
-            return outP;
+            Update();
+            main.Focus();
         }
 
         public static string ToQuotedString(string input)
