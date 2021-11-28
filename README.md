@@ -2,4 +2,4 @@
 
 Generates DateTime formats in C#, C++, Luxon (JavaScript), Java, PHP, Python.
 
-Try it at http://www.dateformatgenerator.com/.
+Try it at https://www.dateformatgenerator.com/.
