@@ -674,6 +674,9 @@ Bridge.assembly("DateFormatGenerator", function ($asm, globals) {
                     literal.append("\"");
                     return literal.toString();
                 },
+                ToJSInterpolatedString: function (input) {
+                    return "`" + (System.String.replaceAll(System.String.replaceAll(System.String.replaceAll(input, "\\", "\\\\"), "`", "\\`"), "$", "\\$") || "");
+                },
                 ToVerbatimString: function (input) {
                     return "@\"" + (System.String.replaceAll(input, "\"", "\"\"") || "") + "\"";
                 }
@@ -998,13 +1001,13 @@ history.replaceState({}, '', updateQueryStringParameter(location.href, key, valu
                 return System.String.replaceAll(rawText, "\\", "\\\\");
             },
             MustEscapeWord: function (word) {
-                return DateFormatGenerator.DateFormatType.prototype.MustEscapeWord.call(this, word) || System.Linq.Enumerable.from(word, System.Char).any($asm.$.DateFormatGenerator.CSDateFormat.f1);
+                return System.Text.RegularExpressions.Regex.isMatch(word, "[a-zA-Z\"']");
             },
             CompleteCodeSample: function (format) {
-                return System.String.format("using System;\r\n\r\nDateTime date = DateTime.Now;\r\nConsole.WriteLine({0});", [System.Linq.Enumerable.from(this.CodeSamples(format), System.String).where($asm.$.DateFormatGenerator.CSDateFormat.f2).last()]);
+                return System.String.format("using System;\r\n\r\nDateTime date = DateTime.Now;\r\nConsole.WriteLine({0});", [System.Linq.Enumerable.from(this.CodeSamples(format), System.String).where($asm.$.DateFormatGenerator.CSDateFormat.f1).last()]);
             },
             EscapeFormatPart: function (formatPart) {
-                return "'" + (formatPart || "") + "'";
+                return formatPart.length === 1 ? ("\\" + (formatPart || "")) : ("'" + (formatPart || "") + "'");
             }
         }
     });
@@ -1012,10 +1015,7 @@ history.replaceState({}, '', updateQueryStringParameter(location.href, key, valu
     Bridge.ns("DateFormatGenerator.CSDateFormat", $asm.$);
 
     Bridge.apply($asm.$.DateFormatGenerator.CSDateFormat, {
-        f1: function (c) {
-            return c === 34 || c === 39;
-        },
-        f2: function (s) {
+        f1: function (s) {
             return !Bridge.referenceEquals(s, "");
         }
     });
@@ -1063,10 +1063,10 @@ history.replaceState({}, '', updateQueryStringParameter(location.href, key, valu
                 }, arguments));
             },
             MustEscapeWord: function (word) {
-                return DateFormatGenerator.DateFormatType.prototype.MustEscapeWord.call(this, word) || System.Linq.Enumerable.from(word, System.Char).any($asm.$.DateFormatGenerator.JavaDateFormat.f1);
+                return System.Text.RegularExpressions.Regex.isMatch(word, "[a-zA-Z']");
             },
             CompleteCodeSample: function (format) {
-                return System.String.format("import java.time.LocalDateTime;\r\nimport java.time.format.DateTimeFormatter;\r\n\r\npublic class Main {{\r\n  public static void main(String[] args) {{\r\n    LocalDateTime date = LocalDateTime.now();\r\n    System.out.println({0});\r\n  }}\r\n}}", [System.Linq.Enumerable.from(this.CodeSamples(format), System.String).where($asm.$.DateFormatGenerator.JavaDateFormat.f2).last()]);
+                return System.String.format("import java.time.LocalDateTime;\r\nimport java.time.format.DateTimeFormatter;\r\n\r\npublic class Main {{\r\n  public static void main(String[] args) {{\r\n    LocalDateTime date = LocalDateTime.now();\r\n    System.out.println({0});\r\n  }}\r\n}}", [System.Linq.Enumerable.from(this.CodeSamples(format), System.String).where($asm.$.DateFormatGenerator.JavaDateFormat.f1).last()]);
             },
             EscapeFormatPart: function (formatPart) {
                 return "'" + (formatPart || "") + "'";
@@ -1077,10 +1077,7 @@ history.replaceState({}, '', updateQueryStringParameter(location.href, key, valu
     Bridge.ns("DateFormatGenerator.JavaDateFormat", $asm.$);
 
     Bridge.apply($asm.$.DateFormatGenerator.JavaDateFormat, {
-        f1: function (c) {
-            return c === 39;
-        },
-        f2: function (s) {
+        f1: function (s) {
             return !Bridge.referenceEquals(s, "");
         }
     });
@@ -1112,6 +1109,11 @@ history.replaceState({}, '', updateQueryStringParameter(location.href, key, valu
                                             return true;
                                     }
                                     case 1: {
+                                        $enumerator.current = System.String.contains(format,"\"") ? System.String.format("date.toFormat({0})", [DateFormatGenerator.Program.ToJSInterpolatedString(format)]) : "";
+                                            $step = 2;
+                                            return true;
+                                    }
+                                    case 2: {
 
                                     }
                                     default: {
@@ -1127,8 +1129,11 @@ history.replaceState({}, '', updateQueryStringParameter(location.href, key, valu
                     return $enumerator;
                 }, arguments));
             },
+            MustEscapeWord: function (word) {
+                return System.Text.RegularExpressions.Regex.isMatch(word, "[a-zA-Z']");
+            },
             CompleteCodeSample: function (format) {
-                return System.String.format("<script\r\n    src=\"https://cdn.jsdelivr.net/npm/luxon@2.1.1/build/global/luxon.min.js\"\r\n    integrity=\"sha256-vSborW7X9FSJg4XLi1TpwZKTlbN2nP6lHhC0XCNrVwU=\"\r\n    crossorigin=\"anonymous\"\r\n></script>\r\n<script>\r\nconst date = luxon.DateTime.now();\r\nconsole.log({0});\r\n</script>", [System.Linq.Enumerable.from(this.CodeSamples(format), System.String).where($asm.$.DateFormatGenerator.LuxonDateFormat.f1).last()]);
+                return System.String.format("<script\r\n    src=\"https://cdn.jsdelivr.net/npm/luxon@2.1.1/build/global/luxon.min.js\"\r\n    integrity=\"sha256-vSborW7X9FSJg4XLi1TpwZKTlbN2nP6lHhC0XCNrVwU=\"\r\n    crossorigin=\"anonymous\"\r\n></script>\r\n<script>\r\n    const date = luxon.DateTime.now();\r\n    console.log({0});\r\n</script>", [System.Linq.Enumerable.from(this.CodeSamples(format), System.String).where($asm.$.DateFormatGenerator.LuxonDateFormat.f1).last()]);
             },
             EscapeFormatPart: function (formatPart) {
                 return "'" + (formatPart || "") + "'";
@@ -1149,7 +1154,7 @@ history.replaceState({}, '', updateQueryStringParameter(location.href, key, valu
         props: {
             EscapeBehavior: {
                 get: function () {
-                    return DateFormatGenerator.EscapeBehavior.EscapeFormats;
+                    return DateFormatGenerator.EscapeBehavior.EscapeAllText;
                 }
             }
         },
@@ -1186,14 +1191,11 @@ history.replaceState({}, '', updateQueryStringParameter(location.href, key, valu
                     return $enumerator;
                 }, arguments));
             },
-            InitialEscape: function (rawText) {
-                return System.String.replaceAll(rawText, "\\", "\\\\");
-            },
             CompleteCodeSample: function (format) {
                 return System.String.format("<?php\r\n$date = new DateTime();\r\necho {0};\r\n?>", [System.Linq.Enumerable.from(this.CodeSamples(format), System.String).where($asm.$.DateFormatGenerator.PHPDateFormat.f1).last()]);
             },
             EscapeFormatPart: function (formatPart) {
-                return "\\" + (formatPart || "");
+                return System.String.concat(Bridge.toArray(System.Linq.Enumerable.from(formatPart, System.Char).select($asm.$.DateFormatGenerator.PHPDateFormat.f2)));
             }
         }
     });
@@ -1203,6 +1205,9 @@ history.replaceState({}, '', updateQueryStringParameter(location.href, key, valu
     Bridge.apply($asm.$.DateFormatGenerator.PHPDateFormat, {
         f1: function (s) {
             return !Bridge.referenceEquals(s, "");
+        },
+        f2: function (c) {
+            return (c >= 97 && c <= 122) || (c >= 65 && c <= 90) || c === 92 ? ("\\" + String.fromCharCode(c)) : String.fromCharCode(c);
         }
     });
 

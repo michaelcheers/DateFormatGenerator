@@ -438,6 +438,9 @@ history.replaceState({}, '', updateQueryStringParameter(location.href, key, valu
             return literal.ToString();
         }
 
+        public static string ToJSInterpolatedString (string input)
+            => "`" + input.Replace(@"\", @"\\").Replace("`", @"\`").Replace("$", @"\$");
+
         public static string ToVerbatimString(string input)
             => "@\"" + input.Replace("\"", "\"\"") + "\"";
     }

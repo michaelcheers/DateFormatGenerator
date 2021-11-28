@@ -80,7 +80,7 @@ namespace DateFormatGenerator
         public override string InitialEscape(string rawText) => rawText.Replace(@"\", @"\\");
 
         public override bool MustEscapeWord(string word) =>
-            base.MustEscapeWord(word) || word.Any(c => c == '"' || c == '\'');
+            Regex.IsMatch(word, @"[a-zA-Z""']");
 
         public override string CompleteCodeSample(string format) =>
 $@"using System;
@@ -92,7 +92,7 @@ Console.WriteLine({CodeSamples(format).Where(s => s != "").Last()});";
 
         public override EscapeBehavior EscapeBehavior => EscapeBehavior.EscapeWords;
 
-        public override string EscapeFormatPart(string formatPart) => "'" + formatPart + "'";
+        public override string EscapeFormatPart(string formatPart) => formatPart.Length == 1 ? ("\\" + formatPart) : ("'" + formatPart + "'");
     }
     public class JavaDateFormat : DateFormatType
     {
@@ -104,7 +104,7 @@ Console.WriteLine({CodeSamples(format).Where(s => s != "").Last()});";
         }
 
         public override bool MustEscapeWord(string word) =>
-            base.MustEscapeWord(word) || word.Any(c => c == '\'');
+            Regex.IsMatch(word, "[a-zA-Z']");
 
         public override string CompleteCodeSample(string format) =>
 $@"import java.time.LocalDateTime;
@@ -130,17 +130,20 @@ public class Main {{
             yield return $"$date->format({ToQuotedString(format)})";
         }
 
-        public override string InitialEscape(string rawText) => rawText.Replace(@"\", @"\\");
-
         public override string CompleteCodeSample(string format) =>
 $@"<?php
 $date = new DateTime();
 echo {CodeSamples(format).Where(s => s != "").Last()};
 ?>";
 
-        public override EscapeBehavior EscapeBehavior => EscapeBehavior.EscapeFormats;
+        public override EscapeBehavior EscapeBehavior => EscapeBehavior.EscapeAllText;
 
-        public override string EscapeFormatPart(string formatPart) => "\\" + formatPart;
+        public override string EscapeFormatPart(string formatPart) =>
+            string.Concat(
+                formatPart.Select(
+                    c => (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '\\' ? ("\\" + c) : c.ToString()
+                )
+            );
     }
     public class PythonDateFormat : DateFormatType
     {
@@ -169,7 +172,11 @@ print({CodeSamples(format).Where(s => s != "").Last()})";
         public override IEnumerable<string> CodeSamples(string format)
         {
             yield return $"date.toFormat({ToQuotedString(format)})";
+            yield return format.Contains("\"") ? $"date.toFormat({ToJSInterpolatedString(format)})" : "";
         }
+
+        public override bool MustEscapeWord(string word) =>
+            Regex.IsMatch(word, @"[a-zA-Z']");
 
         public override string CompleteCodeSample(string format) =>
 $@"<script
@@ -178,8 +185,8 @@ $@"<script
     crossorigin=""anonymous""
 ></script>
 <script>
-const date = luxon.DateTime.now();
-console.log({CodeSamples(format).Where(s => s != "").Last()});
+    const date = luxon.DateTime.now();
+    console.log({CodeSamples(format).Where(s => s != "").Last()});
 </script>";
 
         public override EscapeBehavior EscapeBehavior => EscapeBehavior.EscapeWords;
