@@ -1233,7 +1233,7 @@ history.replaceState({}, '', updateQueryStringParameter(location.href, key, valu
                             for (;;) {
                                 switch ($step) {
                                     case 0: {
-                                        $enumerator.current = System.String.format("now.strftime({0})", [DateFormatGenerator.Program.ToQuotedString(format)]);
+                                        $enumerator.current = System.String.format("date.strftime({0})", [DateFormatGenerator.Program.ToQuotedString(format)]);
                                             $step = 1;
                                             return true;
                                     }

@@ -151,7 +151,7 @@ echo {CodeSamples(format).Where(s => s != "").Last()};
 
         public override IEnumerable<string> CodeSamples(string format)
         {
-            yield return $"now.strftime({ToQuotedString(format)})";
+            yield return $"date.strftime({ToQuotedString(format)})";
         }
 
         public override string CompleteCodeSample(string format) =>
