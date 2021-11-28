@@ -1,3 +1,4 @@
 {
-  "output": "docs"
+  "output": "docs",
+  "html": { "title": "DateTime Format Generator" }
 }
