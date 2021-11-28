@@ -375,7 +375,25 @@ history.replaceState({}, '', updateQueryStringParameter(location.href, key, enco
                         .Add(new HTMLSummaryElement().Add("Code Sample"))
                         .Add(new HTMLPreElement().Add(codeSample))
                     );
-            };
+            }
+            Document.Body.AppendChild(
+                new HTMLFooterElement
+                {
+                    Style =
+                    {
+                        BorderTop = "1px solid black",
+                        Position = Position.Absolute,
+                        PaddingTop = "0.20em",
+                        Bottom = "0.25em",
+                        Width = "98%",
+                        TextAlign = TextAlign.Center,
+                        FontSize = "1.5em"
+                    }
+                }.Add(
+                    "Report issues ",
+                    new HTMLAnchorElement { Href = "https://github.com/michaelcheers/DateFormatGenerator/issues", Target = "_blank" }.Add("here")
+                )
+            );
             main.OnInput = _ => Update();
             langSelector.OnInput = _ => Update();
             Update();

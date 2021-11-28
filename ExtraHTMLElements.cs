@@ -25,4 +25,11 @@ namespace DateFormatGenerator
         [Template("document.createElement(\"summary\")")]
         public extern HTMLSummaryElement();
     }
+    [External]
+    [Name("HTMLElement")]
+    public sealed class HTMLFooterElement : HTMLElement
+    {
+        [Template("document.createElement(\"footer\")")]
+        public extern HTMLFooterElement();
+    }
 }

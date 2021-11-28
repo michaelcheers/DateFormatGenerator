@@ -1,8 +1,0 @@
-{
-  "profiles": {
-    "DateFormatGenerator": {
-      "commandName": "Executable",
-      "executablePath": "C:\\Users\\micha\\source\\repos\\DateFormatGenerator\\bin\\Debug\\net48\\bridge\\index.html"
-    }
-  }
-}
