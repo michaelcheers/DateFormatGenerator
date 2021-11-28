@@ -296,8 +296,14 @@ history.replaceState({}, '', updateQueryStringParameter(location.href, key, valu
             {
                 URLManipulation.ModifyQS("lang", null, null);
                 URLManipulation.ModifyQS("q", null, null);
-                URLManipulation.ModifyQS("lang", langSelector.Value, null);
+                URLManipulation.ModifyQS("lang", langSelector.Value, "C#");
                 URLManipulation.ModifyQS("q", main.Value, "");
+                string title = main.Value;
+                if (langSelector.Value != "C#" || main.Value != "")
+                    title += main.Value == "" ? langSelector.Value : $" ({langSelector.Value})";
+                if (title != "") title += " - ";
+                title += "DateTime Format Generator";
+                Document.Title = title;
                 var currentLang = langs[langSelector.Value];
                 string inputted = main.Value;
                 if (inputted.Contains("May")) errors.Add("May is ambiguous between MMM and MMMM. Choose another month.");

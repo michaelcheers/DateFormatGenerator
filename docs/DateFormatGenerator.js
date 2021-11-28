@@ -450,8 +450,17 @@ Bridge.assembly("DateFormatGenerator", function ($asm, globals) {
                 var $t1, $t2, $t3;
                 DateFormatGenerator.URLManipulation.ModifyQS("lang", null, null);
                 DateFormatGenerator.URLManipulation.ModifyQS("q", null, null);
-                DateFormatGenerator.URLManipulation.ModifyQS("lang", langSelector.value, null);
+                DateFormatGenerator.URLManipulation.ModifyQS("lang", langSelector.value, "C#");
                 DateFormatGenerator.URLManipulation.ModifyQS("q", main.value, "");
+                var title = main.value;
+                if (!Bridge.referenceEquals(langSelector.value, "C#") || !Bridge.referenceEquals(main.value, "")) {
+                    title = (title || "") + ((Bridge.referenceEquals(main.value, "") ? langSelector.value : System.String.format(" ({0})", [langSelector.value])) || "");
+                }
+                if (!Bridge.referenceEquals(title, "")) {
+                    title = (title || "") + " - ";
+                }
+                title = (title || "") + "DateTime Format Generator";
+                document.title = title;
                 var currentLang = DateFormatGenerator.Program.langs.getItem(langSelector.value);
                 var inputted = main.value;
                 if (System.String.contains(inputted,"May")) {
