@@ -432,7 +432,7 @@ Bridge.assembly("DateFormatGenerator", function ($asm, globals) {
             var Update = null;
             var body = document.body.appendChild(($t = document.createElement("div"), $t.style.marginLeft = "25%", $t.style.width = "50%", $t.style.fontSize = "1.5em", $t));
             body.appendChild(($t = document.createElement("h1"), $t.innerHTML = "DateTime Format Generator", $t.style.fontSize = "2em", $t.style.textAlign = "center", $t.style.textDecoration = "underline", $t));
-            var main = ($t = document.createElement("input"), $t.type = "search", $t.style.textAlign = "center", $t.style.width = "100%", $t.style.fontSize = "2em", $t);
+            var main = ($t = document.createElement("input"), $t.type = "search", $t.placeholder = "June 17 2021 8:35 AM", $t.style.textAlign = "center", $t.style.width = "100%", $t.style.fontSize = "2em", $t);
             main.setAttribute("spellcheck", "true");
             body.appendChild(main);
             body.appendChild(document.createElement("hr"));
@@ -546,7 +546,7 @@ Bridge.assembly("DateFormatGenerator", function ($asm, globals) {
                 Update();
             };
             Update();
-            main.focus();
+            //main.Focus();
         },
         statics: {
             fields: {

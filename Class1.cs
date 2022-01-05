@@ -280,7 +280,7 @@ history.replaceState({}, '', updateQueryStringParameter(location.href, key, valu
                 InnerHTML = "DateTime Format Generator",
                 Style = { FontSize = "2em", TextAlign = TextAlign.Center, TextDecoration = TextDecoration.Underline }
             });
-            HTMLInputElement main = new HTMLInputElement { Type = InputType.Search, Style = { TextAlign = TextAlign.Center, Width = "100%", FontSize = "2em" } };
+            HTMLInputElement main = new HTMLInputElement { Type = InputType.Search, Placeholder = "June 17 2021 8:35 AM", Style = { TextAlign = TextAlign.Center, Width = "100%", FontSize = "2em" } };
             main.SetAttribute("spellcheck", "true");
             body.AppendChild(main);
             body.AppendChild(new HTMLHRElement());
@@ -403,7 +403,7 @@ history.replaceState({}, '', updateQueryStringParameter(location.href, key, valu
             main.OnInput = _ => Update();
             langSelector.OnInput = _ => Update();
             Update();
-            main.Focus();
+            //main.Focus();
         }
 
         public static string ToQuotedString(string input)
