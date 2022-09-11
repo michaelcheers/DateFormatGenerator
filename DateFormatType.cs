@@ -219,4 +219,40 @@ int main()
 
         public override string EscapeFormatPart(string formatPart) => formatPart.Replace("%", "%%");
     }
+    public class MySQLDateFormat : DateFormatType
+    {
+        // Escape % with %%
+
+        public override string CompleteCodeSample(string format) =>
+            $"SELECT {SimpleDateFormat("NOW()", format)};";
+
+        public override IEnumerable<string> CodeSamples(string format)
+        {
+            yield return SimpleDateFormat("date", format);
+        }
+
+        static string SimpleDateFormat (string dateExpression, string format) => $"DATE_FORMAT({dateExpression}, {ToQuotedString(format)})";
+
+        public override EscapeBehavior EscapeBehavior => EscapeBehavior.EscapeAllText;
+
+        public override string EscapeFormatPart(string formatPart) => formatPart.Replace("%", "%%");
+    }
+    public class RubyDateFormat : DateFormatType
+    {
+        // Escape % with %%
+
+        public override string CompleteCodeSample(string format) =>
+$@"require 'date'
+date = DateTime.now()
+puts {CodeSamples(format).Where(s => s != "").Last()}";
+
+        public override IEnumerable<string> CodeSamples(string format)
+        {
+            yield return $"date.strftime({ToQuotedString(format)})";
+        }
+
+        public override EscapeBehavior EscapeBehavior => EscapeBehavior.EscapeAllText;
+
+        public override string EscapeFormatPart(string formatPart) => formatPart.Replace("%", "%%");
+    }
 }

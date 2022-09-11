@@ -230,6 +230,58 @@ history.replaceState({}, '', updateQueryStringParameter(location.href, key, valu
                     [tt] = "%p"
                     // Escape % with %%
                 }
+            },
+            ["MySQL"] = new MySQLDateFormat
+            {
+                Formats = new Dictionary<DateFormat, string>
+                {
+                    [yy] = "%y",
+                    [yyyy] = "%Y",
+                    [M] = "%c",
+                    [MM] = "%m",
+                    [MMM] = "%b",
+                    [MMMM] = "%M",
+                    [d] = "%e",
+                    [dd] = "%d",
+                    [ddd] = "%a",
+                    [dddd] = "%W",
+                    [H] = "%k",
+                    [HH] = "%H",
+                    [h] = "%l",
+                    [hh] = "%h",
+                    [m] = "%i",
+                    [mm] = "%i",
+                    [s] = "%s",
+                    [ss] = "%s",
+                    [tt] = "%p"
+                    // Escape % with %%
+                }
+            },
+            ["Ruby"] = new RubyDateFormat
+            {
+                Formats = new Dictionary<DateFormat, string>
+                {
+                    [yy] = "%y",
+                    [yyyy] = "%Y",
+                    [M] = "%-m",
+                    [MM] = "%m",
+                    [MMM] = "%b",
+                    [MMMM] = "%B",
+                    [d] = "%-d",
+                    [dd] = "%d",
+                    [ddd] = "%a",
+                    [dddd] = "%A",
+                    [H] = "%-H",
+                    [HH] = "%H",
+                    [h] = "%-I",
+                    [hh] = "%I",
+                    [m] = "%-M",
+                    [mm] = "%M",
+                    [s] = "%-S",
+                    [ss] = "%S",
+                    [tt] = "%p"
+                    // Escape % with %%
+                }
             }
         };
 
@@ -274,39 +326,40 @@ history.replaceState({}, '', updateQueryStringParameter(location.href, key, valu
 
         public static void Main()
         {
-            var body = Document.Body.AppendChild(new HTMLDivElement { Style = { MarginLeft = "25%", Width = "50%", FontSize = "1.5em" } });
-            body.AppendChild(new HTMLHeadingElement
+            var pageContainer = Document.Body.AppendChild(new HTMLDivElement { Style = { Position = Position.Relative, MinHeight = "100vh" } });
+            var contentWrap = pageContainer.AppendChild(new HTMLDivElement { Style = { MarginLeft = "25%", Width = "50%", FontSize = "1.5em", PaddingBottom = "2.5rem" } });
+            contentWrap.AppendChild(new HTMLHeadingElement
             {
                 InnerHTML = "DateTime Format Generator",
-                Style = { FontSize = "2em", TextAlign = TextAlign.Center, TextDecoration = TextDecoration.Underline }
+                Style = { FontSize = "2em", TextAlign = TextAlign.Center, TextDecoration = TextDecoration.Underline, CssFloat = Float.Left }
             });
-            HTMLInputElement main = new HTMLInputElement { Type = InputType.Search, Placeholder = "June 17 2021 8:35 AM", Style = { TextAlign = TextAlign.Center, Width = "100%", FontSize = "2em" } };
-            main.SetAttribute("spellcheck", "true");
-            body.AppendChild(main);
-            body.AppendChild(new HTMLHRElement());
-            HTMLSelectElement langSelector = CreateSelector(langs.Keys);
-            langSelector.Style.FontSize = "4em";
+            HTMLInputElement input = new HTMLInputElement { Type = InputType.Search, Placeholder = $"June 17 {DateTime.Now.Year} 8:35 AM", Style = { TextAlign = TextAlign.Center, Width = "100%", FontSize = "2em" } };
+            input.SetAttribute("spellcheck", "true");
+            contentWrap.AppendChild(input);
+            contentWrap.AppendChild(new HTMLHRElement());
+            HTMLSelectElement langSelector = CreateSelector(langs.Keys.OrderBy(k => k));
+            langSelector.Style.FontSize = "2em";
             langSelector.Style.CssFloat = Float.Right;
-            body.AppendChild(langSelector);
+            contentWrap.AppendChild(langSelector);
             langSelector.Value = URLManipulation.Q("lang", "C#");
-            main.Value = URLManipulation.Q("q", "");
+            input.Value = URLManipulation.Q("q", "");
             HTMLDivElement solution = new HTMLDivElement();
-            body.AppendChild(solution);
+            contentWrap.AppendChild(solution);
             void Update()
             {
                 URLManipulation.ModifyQS("lang", null, null);
                 URLManipulation.ModifyQS("q", null, null);
                 URLManipulation.ModifyQS("lang", langSelector.Value, "C#");
-                URLManipulation.ModifyQS("q", main.Value, "");
-                string title = main.Value;
-                if (langSelector.Value != "C#" || main.Value != "")
-                    title += main.Value == "" ? langSelector.Value : $" ({langSelector.Value})";
+                URLManipulation.ModifyQS("q", input.Value, "");
+                string title = input.Value;
+                if (langSelector.Value != "C#" || input.Value != "")
+                    title += input.Value == "" ? langSelector.Value : $" ({langSelector.Value})";
                 if (title != "") title += " - ";
                 title += "DateTime Format Generator";
                 Document.Title = title;
                 var currentLang = langs[langSelector.Value];
-                string inputted = main.Value;
-                if (inputted.Contains("May")) errors.Add("May is ambiguous between MMM and MMMM. Choose another month.");
+                string inputted = input.Value;
+                if (inputted.Contains("May")) errors.Add("May is ambiguous between the short and long month formats. Choose another month.");
                 inputted = Regex.Replace(inputted, @"'(?<!\d)\d{2}(?!\d)", "'[[yy]]");
                 inputted = Regex.Replace(inputted, @"(?<!\d)\d{3,}(?!\d)", "[[yyyy]]");
                 inputted = (Regex.Replace(Regex.Replace(Regex.Replace(Regex.Replace(Regex.Replace(Regex.Replace(Regex.Replace(Regex.Replace(Regex.Replace(inputted,
@@ -342,15 +395,15 @@ history.replaceState({}, '', updateQueryStringParameter(location.href, key, valu
                 if (solution.QuerySelector("details").As<HTMLDetailsElement>() is HTMLDetailsElement detailsElement)
                     CodeSampleOpen = detailsElement.Open;
                 solution.InnerHTML = "";
-                solution.AppendChild(new HTMLHeadingElement { InnerHTML = "Format", Style = { TextDecoration = TextDecoration.Underline } });
+                solution.AppendChild(new HTMLHeadingElement { InnerHTML = "Format", Style = { TextDecoration = TextDecoration.Underline, MarginTop = "0px", MarginRight = "2em" } });
                 IEnumerable<string> matchingFormats = typeof(DateTimeFormatInfo).GetProperties().Where(p => p.CanRead && p.IsPublic && !p.IsStatic && p.PropertyType == typeof(string) && (string)p.GetValue(DateTimeFormatInfo.CurrentInfo) == inputted).Select(p => p.Name);
                 string csFormatStr = langs["C#"].GenerateFormatString(formatStringProto);
-                if (DateTime.TryParseExact(main.Value, csFormatStr, DateTimeFormatInfo.CurrentInfo, out var d))
+                if (DateTime.TryParseExact(input.Value, csFormatStr, DateTimeFormatInfo.CurrentInfo, out var d))
                 {
                     solution.AppendChild(new HTMLSpanElement { InnerHTML = "Understood Date: ", Style = { FontWeight = "bold" } });
                     solution.AppendChild(new Text(d.ToString("MMMM d, yyyy h:mm tt").ToUpper()));
                     string backToString = d.ToString(csFormatStr);
-                    if (backToString != main.Value)
+                    if (backToString != input.Value)
                     {
                         solution.AppendChild(new HTMLBRElement());
                         solution.AppendChild(new HTMLSpanElement { InnerHTML = "Reformatted Date: ", Style = { FontWeight = "bold" } });
@@ -382,7 +435,7 @@ history.replaceState({}, '', updateQueryStringParameter(location.href, key, valu
                         .Add(new HTMLPreElement().Add(codeSample))
                     );
             }
-            Document.Body.AppendChild(
+            pageContainer.AppendChild(
                 new HTMLFooterElement
                 {
                     Style =
@@ -400,7 +453,7 @@ history.replaceState({}, '', updateQueryStringParameter(location.href, key, valu
                     new HTMLAnchorElement { Href = "https://github.com/michaelcheers/DateFormatGenerator/issues", Target = "_blank" }.Add("here")
                 )
             );
-            main.OnInput = _ => Update();
+            input.OnInput = _ => Update();
             langSelector.OnInput = _ => Update();
             Update();
             //main.Focus();
