@@ -1,5 +1,5 @@
 /**
- * @version 1.0.0
+ * @version 1.0.0+ad7c7ace8600df1881c86a33668fa78e1d128089
  * @author DateFormatGenerator
  * @compiler Bridge.NET 17.10.1
  */
@@ -563,7 +563,7 @@ Bridge.assembly("DateFormatGenerator", function ($asm, globals) {
                     this.shortMonthRegex = "Jan|Feb|Mar|Apr|Jun|Jul|Aug|Sep|Oct|Nov|Dec";
                     this.longMonthRegex = "January|February|March|April|May|June|July|August|September|October|November|December";
                     this.strMonthRegex = "Jan|Feb|Mar|Apr|Jun|Jul|Aug|Sep|Oct|Nov|Dec|January|February|March|April|May|June|July|August|September|October|November|December";
-                    this.langs = $asm.$.DateFormatGenerator.Program.f14(new (System.Collections.Generic.Dictionary$2(System.String,DateFormatGenerator.DateFormatType)).ctor());
+                    this.langs = $asm.$.DateFormatGenerator.Program.f15(new (System.Collections.Generic.Dictionary$2(System.String,DateFormatGenerator.DateFormatType)).ctor());
                     this.errors = new (System.Collections.Generic.List$1(System.String)).ctor();
                 }
             },
@@ -591,7 +591,7 @@ Bridge.assembly("DateFormatGenerator", function ($asm, globals) {
                 },
                 SafeSubstitution: function (input, substitutions) {
                     var $t;
-                    $t = Bridge.getEnumerator(System.Linq.Enumerable.from(substitutions, System.Collections.Generic.KeyValuePair$2(System.Text.RegularExpressions.Match,System.String)).orderByDescending($asm.$.DateFormatGenerator.Program.f15));
+                    $t = Bridge.getEnumerator(System.Linq.Enumerable.from(substitutions, System.Collections.Generic.KeyValuePair$2(System.Text.RegularExpressions.Match,System.String)).orderByDescending($asm.$.DateFormatGenerator.Program.f16));
                     try {
                         while ($t.moveNext()) {
                             var _d1 = $t.Current;
@@ -889,18 +889,41 @@ Bridge.assembly("DateFormatGenerator", function ($asm, globals) {
             return _o8;
         },
         f14: function (_o9) {
-            var $t;
-            _o9.setItem("C#", ($t = new DateFormatGenerator.CSDateFormat(), $t.Formats = $asm.$.DateFormatGenerator.Program.f6(new (System.Collections.Generic.Dictionary$2(DateFormatGenerator.DateFormat,System.String)).ctor()), $t));
-            _o9.setItem("C++", ($t = new DateFormatGenerator.CPPDateFormat(), $t.Formats = $asm.$.DateFormatGenerator.Program.f7(new (System.Collections.Generic.Dictionary$2(DateFormatGenerator.DateFormat,System.String)).ctor()), $t));
-            _o9.setItem("Luxon JS", ($t = new DateFormatGenerator.LuxonDateFormat(), $t.Formats = $asm.$.DateFormatGenerator.Program.f8(new (System.Collections.Generic.Dictionary$2(DateFormatGenerator.DateFormat,System.String)).ctor()), $t));
-            _o9.setItem("Java", ($t = new DateFormatGenerator.JavaDateFormat(), $t.Formats = $asm.$.DateFormatGenerator.Program.f9(new (System.Collections.Generic.Dictionary$2(DateFormatGenerator.DateFormat,System.String)).ctor()), $t));
-            _o9.setItem("PHP", ($t = new DateFormatGenerator.PHPDateFormat(), $t.Formats = $asm.$.DateFormatGenerator.Program.f10(new (System.Collections.Generic.Dictionary$2(DateFormatGenerator.DateFormat,System.String)).ctor()), $t));
-            _o9.setItem("Python", ($t = new DateFormatGenerator.PythonDateFormat(), $t.Formats = $asm.$.DateFormatGenerator.Program.f11(new (System.Collections.Generic.Dictionary$2(DateFormatGenerator.DateFormat,System.String)).ctor()), $t));
-            _o9.setItem("MySQL", ($t = new DateFormatGenerator.MySQLDateFormat(), $t.Formats = $asm.$.DateFormatGenerator.Program.f12(new (System.Collections.Generic.Dictionary$2(DateFormatGenerator.DateFormat,System.String)).ctor()), $t));
-            _o9.setItem("Ruby", ($t = new DateFormatGenerator.RubyDateFormat(), $t.Formats = $asm.$.DateFormatGenerator.Program.f13(new (System.Collections.Generic.Dictionary$2(DateFormatGenerator.DateFormat,System.String)).ctor()), $t));
+            _o9.setItem(DateFormatGenerator.DateFormat.yy, "yy");
+            _o9.setItem(DateFormatGenerator.DateFormat.yyyy, "yyyy");
+            _o9.setItem(DateFormatGenerator.DateFormat.M, "M");
+            _o9.setItem(DateFormatGenerator.DateFormat.MM, "MM");
+            _o9.setItem(DateFormatGenerator.DateFormat.MMM, "MMM");
+            _o9.setItem(DateFormatGenerator.DateFormat.MMMM, "MMMM");
+            _o9.setItem(DateFormatGenerator.DateFormat.d, "d");
+            _o9.setItem(DateFormatGenerator.DateFormat.dd, "dd");
+            _o9.setItem(DateFormatGenerator.DateFormat.ddd, "E");
+            _o9.setItem(DateFormatGenerator.DateFormat.dddd, "EEEE");
+            _o9.setItem(DateFormatGenerator.DateFormat.H, "H");
+            _o9.setItem(DateFormatGenerator.DateFormat.HH, "HH");
+            _o9.setItem(DateFormatGenerator.DateFormat.h, "h");
+            _o9.setItem(DateFormatGenerator.DateFormat.hh, "hh");
+            _o9.setItem(DateFormatGenerator.DateFormat.m, "m");
+            _o9.setItem(DateFormatGenerator.DateFormat.mm, "mm");
+            _o9.setItem(DateFormatGenerator.DateFormat.s, "s");
+            _o9.setItem(DateFormatGenerator.DateFormat.ss, "ss");
+            _o9.setItem(DateFormatGenerator.DateFormat.tt, "a");
             return _o9;
         },
-        f15: function (s) {
+        f15: function (_o10) {
+            var $t;
+            _o10.setItem("C#", ($t = new DateFormatGenerator.CSDateFormat(), $t.Formats = $asm.$.DateFormatGenerator.Program.f6(new (System.Collections.Generic.Dictionary$2(DateFormatGenerator.DateFormat,System.String)).ctor()), $t));
+            _o10.setItem("C++", ($t = new DateFormatGenerator.CPPDateFormat(), $t.Formats = $asm.$.DateFormatGenerator.Program.f7(new (System.Collections.Generic.Dictionary$2(DateFormatGenerator.DateFormat,System.String)).ctor()), $t));
+            _o10.setItem("Luxon JS", ($t = new DateFormatGenerator.LuxonDateFormat(), $t.Formats = $asm.$.DateFormatGenerator.Program.f8(new (System.Collections.Generic.Dictionary$2(DateFormatGenerator.DateFormat,System.String)).ctor()), $t));
+            _o10.setItem("Java", ($t = new DateFormatGenerator.JavaDateFormat(), $t.Formats = $asm.$.DateFormatGenerator.Program.f9(new (System.Collections.Generic.Dictionary$2(DateFormatGenerator.DateFormat,System.String)).ctor()), $t));
+            _o10.setItem("PHP", ($t = new DateFormatGenerator.PHPDateFormat(), $t.Formats = $asm.$.DateFormatGenerator.Program.f10(new (System.Collections.Generic.Dictionary$2(DateFormatGenerator.DateFormat,System.String)).ctor()), $t));
+            _o10.setItem("Python", ($t = new DateFormatGenerator.PythonDateFormat(), $t.Formats = $asm.$.DateFormatGenerator.Program.f11(new (System.Collections.Generic.Dictionary$2(DateFormatGenerator.DateFormat,System.String)).ctor()), $t));
+            _o10.setItem("MySQL", ($t = new DateFormatGenerator.MySQLDateFormat(), $t.Formats = $asm.$.DateFormatGenerator.Program.f12(new (System.Collections.Generic.Dictionary$2(DateFormatGenerator.DateFormat,System.String)).ctor()), $t));
+            _o10.setItem("Ruby", ($t = new DateFormatGenerator.RubyDateFormat(), $t.Formats = $asm.$.DateFormatGenerator.Program.f13(new (System.Collections.Generic.Dictionary$2(DateFormatGenerator.DateFormat,System.String)).ctor()), $t));
+            _o10.setItem("Swift", ($t = new DateFormatGenerator.SwiftDateFormat(), $t.Formats = $asm.$.DateFormatGenerator.Program.f14(new (System.Collections.Generic.Dictionary$2(DateFormatGenerator.DateFormat,System.String)).ctor()), $t));
+            return _o10;
+        },
+        f16: function (s) {
             return s.key.getIndex();
         }
     });
@@ -1443,6 +1466,60 @@ history.replaceState({}, '', updateQueryStringParameter(location.href, key, valu
     Bridge.apply($asm.$.DateFormatGenerator.RubyDateFormat, {
         f1: function (s) {
             return !Bridge.referenceEquals(s, "");
+        }
+    });
+
+    Bridge.define("DateFormatGenerator.SwiftDateFormat", {
+        inherits: [DateFormatGenerator.DateFormatType],
+        props: {
+            EscapeBehavior: {
+                get: function () {
+                    return DateFormatGenerator.EscapeBehavior.EscapeWords;
+                }
+            }
+        },
+        methods: {
+            CodeSamples: function (format) {
+                return new (Bridge.GeneratorEnumerable$1(System.String))(Bridge.fn.bind(this, function (format) {
+                    var $step = 0,
+                        $jumpFromFinally,
+                        $returnValue,
+                        $async_e;
+
+                    var $enumerator = new (Bridge.GeneratorEnumerator$1(System.String))(Bridge.fn.bind(this, function () {
+                        try {
+                            for (;;) {
+                                switch ($step) {
+                                    case 0: {
+                                        $enumerator.current = System.String.format("let df = DateFormatter()\r\ndf.dateFormat = {0}\r\nlet dateString = df.string(from: date)", [DateFormatGenerator.Program.ToQuotedString(format)]);
+                                            $step = 1;
+                                            return true;
+                                    }
+                                    case 1: {
+
+                                    }
+                                    default: {
+                                        return false;
+                                    }
+                                }
+                            }
+                        } catch($async_e1) {
+                            $async_e = System.Exception.create($async_e1);
+                            throw $async_e;
+                        }
+                    }));
+                    return $enumerator;
+                }, arguments));
+            },
+            MustEscapeWord: function (word) {
+                return System.Text.RegularExpressions.Regex.isMatch(word, "[a-zA-Z']");
+            },
+            CompleteCodeSample: function (format) {
+                return System.String.format("import Foundation\r\n\r\nlet date = Date()\r\n{0}\r\nprint(dateString)", [System.Linq.Enumerable.from(this.CodeSamples(format), System.String).firstOrDefault(null, null)]);
+            },
+            EscapeFormatPart: function (formatPart) {
+                return "'" + (formatPart || "") + "'";
+            }
         }
     });
 });

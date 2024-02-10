@@ -255,4 +255,29 @@ puts {CodeSamples(format).Where(s => s != "").Last()}";
 
         public override string EscapeFormatPart(string formatPart) => formatPart.Replace("%", "%%");
     }
+    public class SwiftDateFormat : DateFormatType
+    {
+        // Escape with '
+        public override IEnumerable<string> CodeSamples(string format)
+        {
+            yield return $@"let df = DateFormatter()
+df.dateFormat = {ToQuotedString(format)}
+let dateString = df.string(from: date)";
+        }
+
+        public override bool MustEscapeWord(string word) =>
+            Regex.IsMatch(word, @"[a-zA-Z']");
+
+        public override string CompleteCodeSample(string format) =>
+    $@"import Foundation
+
+let date = Date()
+{CodeSamples(format).FirstOrDefault()}
+print(dateString)";
+
+        public override EscapeBehavior EscapeBehavior => EscapeBehavior.EscapeWords;
+
+        public override string EscapeFormatPart(string formatPart) => "'" + formatPart + "'";
+    }
+
 }

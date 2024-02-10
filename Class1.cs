@@ -282,6 +282,31 @@ history.replaceState({}, '', updateQueryStringParameter(location.href, key, valu
                     [tt] = "%p"
                     // Escape % with %%
                 }
+            },
+            ["Swift"] = new SwiftDateFormat
+            {
+                Formats = new Dictionary<DateFormat, string>
+                {
+                    [yy] = "yy",
+                    [yyyy] = "yyyy",
+                    [M] = "M",
+                    [MM] = "MM",
+                    [MMM] = "MMM",
+                    [MMMM] = "MMMM",
+                    [d] = "d",
+                    [dd] = "dd",
+                    [ddd] = "E",
+                    [dddd] = "EEEE",
+                    [H] = "H",
+                    [HH] = "HH",
+                    [h] = "h",
+                    [hh] = "hh",
+                    [m] = "m",
+                    [mm] = "mm",
+                    [s] = "s",
+                    [ss] = "ss",
+                    [tt] = "a"
+                }
             }
         };
 
