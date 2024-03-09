@@ -1,5 +1,5 @@
 /**
- * @version 1.0.0+ad7c7ace8600df1881c86a33668fa78e1d128089
+ * @version 1.0.0+130eaa51f5cf40a34365892a50a00f6f2e95ccef
  * @author DateFormatGenerator
  * @compiler Bridge.NET 17.10.1
  */
@@ -469,7 +469,7 @@ Bridge.assembly("DateFormatGenerator", function ($asm, globals) {
                 }
                 inputted = System.Text.RegularExpressions.Regex.replace(inputted, "'(?<!\\d)\\d{2}(?!\\d)", "'[[yy]]");
                 inputted = System.Text.RegularExpressions.Regex.replace(inputted, "(?<!\\d)\\d{3,}(?!\\d)", "[[yyyy]]");
-                inputted = (System.Text.RegularExpressions.Regex.replace(System.Text.RegularExpressions.Regex.replace(System.Text.RegularExpressions.Regex.replace(System.Text.RegularExpressions.Regex.replace(System.Text.RegularExpressions.Regex.replace(System.Text.RegularExpressions.Regex.replace(System.Text.RegularExpressions.Regex.replace(System.Text.RegularExpressions.Regex.replace(System.Text.RegularExpressions.Regex.replace(inputted, "(?<!\\d)0\\d:\\d{2}:\\d{2}( ?)(AM|PM)", "[[hh]]:[[mm]]:[[ss]]$1[[tt]]"), "(?<!\\d)(?>\\d|1[0-2]):\\d{2}:\\d{2}( ?)(AM|PM)", "[[h]]:[[mm]]:[[ss]]$1[[tt]]"), "(?<!\\d)0\\d:\\d{2}:\\d{2}", "[[HH]]:[[mm]]:[[ss]]"), "(?<!\\d)(?>1?\\d|2[0-3]):\\d{2}:\\d{2}", "[[H]]:[[mm]]:[[ss]]"), "(?<!\\d)0\\d:\\d{2}( ?)(AM|PM)", "[[hh]]:[[mm]]$1[[tt]]"), "(?<!\\d)(?>\\d|1[0-2]):\\d{2}( ?)(AM|PM)", "[[h]]:[[mm]]$1[[tt]]"), "(?<!\\d)0\\d:\\d{2}", "[[HH]]:[[mm]]"), "(?<!\\d)(?>1?\\d|2[0-3]):\\d{2}", "[[H]]:[[mm]]"), "(?<!\\d)(?>\\d|1[0-2])( ?)(AM|PM)", "[[h]]$1[[tt]]"));
+                inputted = (System.Text.RegularExpressions.Regex.replace(System.Text.RegularExpressions.Regex.replace(System.Text.RegularExpressions.Regex.replace(System.Text.RegularExpressions.Regex.replace(System.Text.RegularExpressions.Regex.replace(System.Text.RegularExpressions.Regex.replace(System.Text.RegularExpressions.Regex.replace(System.Text.RegularExpressions.Regex.replace(System.Text.RegularExpressions.Regex.replace(inputted, "(?<!\\d)0\\d:\\d{2}:\\d{2}( ?)(AM|PM)", "[[hh]]:[[mm]]:[[ss]]$1[[tt]]"), "(?<!\\d)(?>1[0-2]|\\d):\\d{2}:\\d{2}( ?)(AM|PM)", "[[h]]:[[mm]]:[[ss]]$1[[tt]]"), "(?<!\\d)0\\d:\\d{2}:\\d{2}", "[[HH]]:[[mm]]:[[ss]]"), "(?<!\\d)(?>2[0-3]|1?\\d):\\d{2}:\\d{2}", "[[H]]:[[mm]]:[[ss]]"), "(?<!\\d)0\\d:\\d{2}( ?)(AM|PM)", "[[hh]]:[[mm]]$1[[tt]]"), "(?<!\\d)(?>1[0-2]|\\d):\\d{2}( ?)(AM|PM)", "[[h]]:[[mm]]$1[[tt]]"), "(?<!\\d)0\\d:\\d{2}", "[[HH]]:[[mm]]"), "(?<!\\d)(?>2[0-3]|1?\\d):\\d{2}", "[[H]]:[[mm]]"), "(?<!\\d)(?>1[0-2]|\\d)( ?)(AM|PM)", "[[h]]$1[[tt]]"));
                 var foundDigits = System.Linq.Enumerable.from(System.Text.RegularExpressions.Regex.matches(inputted, "(?<!\\d)\\d{1,2}(?!\\d)")).select(function (x) { return Bridge.cast(x, System.Text.RegularExpressions.Match); }).select($asm.$.DateFormatGenerator.Program.f2);
                 var dayMonthMatch = null, numMonthMatch = null;
                 if (!System.Text.RegularExpressions.Regex.isMatch(inputted, DateFormatGenerator.Program.strMonthRegex)) {

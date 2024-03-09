@@ -389,14 +389,14 @@ history.replaceState({}, '', updateQueryStringParameter(location.href, key, valu
                 inputted = Regex.Replace(inputted, @"(?<!\d)\d{3,}(?!\d)", "[[yyyy]]");
                 inputted = (Regex.Replace(Regex.Replace(Regex.Replace(Regex.Replace(Regex.Replace(Regex.Replace(Regex.Replace(Regex.Replace(Regex.Replace(inputted,
                     @"(?<!\d)0\d:\d{2}:\d{2}( ?)(AM|PM)",           "[[hh]]:[[mm]]:[[ss]]$1[[tt]]"),
-                    @"(?<!\d)(?>\d|1[0-2]):\d{2}:\d{2}( ?)(AM|PM)", "[[h]]:[[mm]]:[[ss]]$1[[tt]]"),
+                    @"(?<!\d)(?>1[0-2]|\d):\d{2}:\d{2}( ?)(AM|PM)", "[[h]]:[[mm]]:[[ss]]$1[[tt]]"),
                     @"(?<!\d)0\d:\d{2}:\d{2}",                      "[[HH]]:[[mm]]:[[ss]]"),
-                    @"(?<!\d)(?>1?\d|2[0-3]):\d{2}:\d{2}",          "[[H]]:[[mm]]:[[ss]]"),
+                    @"(?<!\d)(?>2[0-3]|1?\d):\d{2}:\d{2}",          "[[H]]:[[mm]]:[[ss]]"),
                     @"(?<!\d)0\d:\d{2}( ?)(AM|PM)",                 "[[hh]]:[[mm]]$1[[tt]]"),
-                    @"(?<!\d)(?>\d|1[0-2]):\d{2}( ?)(AM|PM)",       "[[h]]:[[mm]]$1[[tt]]"),
+                    @"(?<!\d)(?>1[0-2]|\d):\d{2}( ?)(AM|PM)",       "[[h]]:[[mm]]$1[[tt]]"),
                     @"(?<!\d)0\d:\d{2}",                            "[[HH]]:[[mm]]"),
-                    @"(?<!\d)(?>1?\d|2[0-3]):\d{2}",                "[[H]]:[[mm]]"),
-                    @"(?<!\d)(?>\d|1[0-2])( ?)(AM|PM)",             "[[h]]$1[[tt]]")
+                    @"(?<!\d)(?>2[0-3]|1?\d):\d{2}",                "[[H]]:[[mm]]"),
+                    @"(?<!\d)(?>1[0-2]|\d)( ?)(AM|PM)",             "[[h]]$1[[tt]]")
                 );
                 IEnumerable<(Match match, int val)> foundDigits = Regex.Matches(inputted, @"(?<!\d)\d{1,2}(?!\d)").Cast<Match>().Select(m => (m, int.Parse(m.Value)));
                 Match dayMonthMatch = null, numMonthMatch = null;
